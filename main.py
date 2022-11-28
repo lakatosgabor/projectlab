@@ -1,24 +1,25 @@
-import cv2
+import numpy as np
+import cv2 as cv
+from google.colab.patches import cv2_imshow
 
-path ="t.jpg"
 
-# reading the image in grayscale mode
-gray = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+def getCircle():
+  img = cv.imread('t.jpg',0)
+  img = cv.medianBlur(img,5)
+  cimg = cv.cvtColor(img,cv.COLOR_GRAY2BGR)
+  circles = cv.HoughCircles(img,cv.HOUGH_GRADIENT,1, 60,
+                              param1=50,param2=80,minRadius=0,maxRadius=0)
+  circles = np.uint16(np.around(circles))
 
-# threshold
-th, threshed = cv2.threshold(gray, 100, 255, cv2.THRESH_BINARY|cv2.THRESH_OTSU)
+  count = 0;
+  for i in circles[0,:]:
+      count+=1
+      # draw the outer circle
+      cv.circle(cimg,(i[0],i[1]),i[2],(0,255,0),2)
+      # draw the center of the circle
+      cv.circle(cimg,(i[0],i[1]),2,(0,0,255),3)
+  cv2_imshow(cimg)
+  cv.waitKey(0)
+  cv.destroyAllWindows()
 
-# findcontours
-cnts = cv2.findContours(threshed, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)[-2]
-
-# filter by area
-s1 = 2000
-s2 = 3000
-xcnts = []
-
-for cnt in cnts:
-  if s1<cv2.contourArea(cnt) <s2:
-    xcnts.append(cnt)
-
-# printing output
-print("\nDots number: {}".format(len(xcnts)))
+  print("\nCircle number: {}".format(len(circles[0,:])))
