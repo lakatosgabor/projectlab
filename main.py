@@ -7,13 +7,15 @@ def getCircle():
   img = cv.imread('t2.jpg',0)
   img = cv.medianBlur(img,5)
   cimg = cv.cvtColor(img,cv.COLOR_GRAY2BGR)
-  circles = cv.HoughCircles(img,cv.HOUGH_GRADIENT,1, 60,
+  circles = cv.HoughCircles(img, cv.HOUGH_GRADIENT,1, 60,
                               param1=50,param2=80,minRadius=0,maxRadius=100)
+  
+  if (circles.size < 1):
+    print("Nem található objektum!")
+    return
   circles = np.uint16(np.around(circles))
 
-  count = 0;
   for i in circles[0,:]:
-      count+=1
       # draw the outer circle
       cv.circle(cimg,(i[0],i[1]),i[2],(0,255,0),2)
       # draw the center of the circle
@@ -22,7 +24,7 @@ def getCircle():
   cv.waitKey(0)
   cv.destroyAllWindows()
 
-  print("\nCircle number: {}".format(len(circles[0,:])))
+  print("\n Detektált Vent diskek száma: {}".format(len(circles[0,:])))
 
 
 def checkOtherObject():
